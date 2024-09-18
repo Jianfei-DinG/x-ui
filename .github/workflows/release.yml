@@ -54,8 +54,10 @@ jobs:
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
           mv xray xray-linux-amd64
           cd ../..
+          sudo apt-get update
+          sudo apt-get install tree
           tar -zcvf x-ui-linux-amd64.tar.gz x-ui
-          ls -l
+          tree x-ui/
           pwd
 
       - name: Commit changes

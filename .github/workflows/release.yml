@@ -43,22 +43,20 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          # 下载最新版本的 Xray
-          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
-          if [ -z "$LATEST_XRAY_URL" ]; then
-            echo "Error: LATEST_XRAY_URL is empty"
-            exit 1
-          fi
-          curl -L -o xray.zip "$LATEST_XRAY_URL"
-          unzip -o xray.zip && rm xray.zip
+          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
+              | grep "browser_download_url.*Xray-linux-64.zip" \
+              | cut -d '"' -f 4 \
+              | xargs curl -L -o xray.zip && \
+          unzip xray.zip
+          rm -f xray.zip geoip.dat geosite.dat
           # 下载 geoip.dat 和 geosite.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
           mv xray xray-linux-amd64
           cd ../..
-
-      - name: Package
-        run: tar -zcvf x-ui-linux-amd64.tar.gz x-ui
+          tar -zcvf x-ui-linux-amd64.tar.gz x-ui
+          ls -l
+          pwd
 
   linuxarm64build:
     name: Build x-ui ARM64 version

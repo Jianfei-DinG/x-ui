@@ -42,11 +42,16 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
+          # 下载最新的 Xray
+          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
+          curl -L -o Xray-linux-64.zip "$LATEST_XRAY_URL"
           unzip Xray-linux-64.zip
-          rm -f Xray-linux-64.zip geoip.dat geosite.dat
-          wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-          wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+          rm -f Xray-linux-64.zip
+          # 下载最新的 geoip.dat 和 geosite.dat
+          LATEST_GEOIP_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4)
+          LATEST_GEOSITE_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4)
+          curl -L -o geoip.dat "$LATEST_GEOIP_URL"
+          curl -L -o geosite.dat "$LATEST_GEOSITE_URL"
           mv xray xray-linux-amd64
           cd ..
           cd ..

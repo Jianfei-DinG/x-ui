@@ -63,6 +63,8 @@ jobs:
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          tree ./
+          pwd
           git add -f bin/xray-linux-amd64
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat

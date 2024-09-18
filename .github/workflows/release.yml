@@ -59,6 +59,8 @@ jobs:
         run: tar -zcvf x-ui-linux-amd64.tar.gz x-ui
       - name: upload
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: x-ui-linux-amd64.tar.gz
@@ -99,6 +101,8 @@ jobs:
         run: tar -zcvf x-ui-linux-arm64.tar.gz x-ui
       - name: upload
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: x-ui-linux-arm64.tar.gz
@@ -139,6 +143,8 @@ jobs:
         run: tar -zcvf x-ui-linux-s390x.tar.gz x-ui
       - name: upload
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: x-ui-linux-s390x.tar.gz

@@ -54,11 +54,7 @@ jobs:
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
           mv xray xray-linux-amd64
           cd ../..
-          sudo apt-get update
-          sudo apt-get install tree
           tar -zcvf x-ui-linux-amd64.tar.gz x-ui
-          tree x-ui/
-          pwd
 
       - name: Commit changes
         run: |
@@ -66,9 +62,9 @@ jobs:
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -f x-ui/bin/xray-linux-amd64
-          git add -f x-ui/bin/geoip.dat
-          git add -f x-ui/bin/geosite.dat
+          git add -f bin/xray-linux-amd64
+          git add -f bin/geoip.dat
+          git add -f bin/geosite.dat
           git commit -m "$TIMESTAMP"
           git push
           

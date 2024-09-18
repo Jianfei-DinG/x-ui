@@ -53,13 +53,11 @@ jobs:
           curl -L -o xray.zip "$LATEST_XRAY_URL" && \
           unzip -o xray.zip && \
           rm xray.zip
+          
           # 下载最新的 geoip.dat 和 geosite.dat
-          LATEST_GEOIP_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geoip.dat")) | .browser_download_url')
-          LATEST_GEOSITE_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geosite.dat")) | .browser_download_url')
-          echo "LATEST_GEOIP_URL: $LATEST_GEOIP_URL"  # 打印 URL
-          echo "LATEST_GEOSITE_URL: $LATEST_GEOSITE_URL"  # 打印 URL
-          curl -L -o geoip.dat "$LATEST_GEOIP_URL"
-          curl -L -o geosite.dat "$LATEST_GEOSITE_URL"
+          curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
+          curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
+          
           mv xray xray-linux-amd64
           cd .. && cd ..
 

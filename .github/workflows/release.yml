@@ -44,15 +44,12 @@ jobs:
           mkdir bin
           cd bin
           # 下载最新版本的 Xray
-          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
-          echo "LATEST_XRAY_URL: $LATEST_XRAY_URL"  # 打印 URL
-          if [ -z "$LATEST_XRAY_URL" ]; then
-            echo "Error: LATEST_XRAY_URL is empty"
-            exit 1
-          fi
-          curl -L -o Xray-linux-64.zip "$LATEST_XRAY_URL" && \
-          unzip -o Xray-linux-64.zip && \
-          rm Xray-linux-64.zip
+          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
+              | grep "browser_download_url.*Xray-linux-64.zip" \
+              | cut -d '"' -f 4 \
+              | xargs curl -L -o xray.zip && \
+          unzip -o xray.zip && \
+          rm xray.zip
           
           rm -f Xray-linux-64.zip geoip.dat geosite.dat
           # 下载最新的 geoip.dat 和 geosite.dat

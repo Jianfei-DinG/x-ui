@@ -44,7 +44,7 @@ jobs:
           mkdir bin
           cd bin
           # 下载最新的 Xray
-          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
+          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | jq -r '.assets[] | select(.name | contains("Xray-linux-64.zip")) | .browser_download_url')
           echo "LATEST_XRAY_URL: '$LATEST_XRAY_URL'"  # 调试 URL
           if [ -z "$LATEST_XRAY_URL" ]; then
             echo "Error: LATEST_XRAY_URL is empty"
@@ -53,8 +53,8 @@ jobs:
           curl -L -o Xray-linux-64.zip "$LATEST_XRAY_URL"
           rm -f Xray-linux-64.zip geoip.dat geosite.dat
           # 下载最新的 geoip.dat 和 geosite.dat
-          LATEST_GEOIP_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4)
-          LATEST_GEOSITE_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4)
+          LATEST_GEOIP_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geoip.dat")) | .browser_download_url')
+          LATEST_GEOSITE_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geosite.dat")) | .browser_download_url')
           curl -L -o geoip.dat "$LATEST_GEOIP_URL"
           curl -L -o geosite.dat "$LATEST_GEOSITE_URL"
           mv xray xray-linux-amd64

@@ -43,10 +43,11 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
-              | grep "browser_download_url.*Xray-linux-64.zip" \
-              | cut -d '"' -f 4 \
-              | xargs curl -L -o xray.zip && \
+          # curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
+          #     | grep "browser_download_url.*Xray-linux-64.zip" \
+          #     | cut -d '"' -f 4 \
+          #     | xargs curl -L -o xray.zip && \
+          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4 | xargs curl -L -o xray.zip
           unzip xray.zip
           rm -f xray.zip geoip.dat geosite.dat
           # 下载 geoip.dat 和 geosite.dat

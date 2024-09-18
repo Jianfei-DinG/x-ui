@@ -57,15 +57,6 @@ jobs:
           cd .. && cd ..
       - name: package
         run: tar -zcvf x-ui-linux-amd64.tar.gz x-ui
-      - name: upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: x-ui-linux-amd64.tar.gz
-          asset_name: x-ui-linux-amd64.tar.gz
-          asset_content_type: application/gzip
 
   linuxarm64build:
     name: build x-ui arm64 version
@@ -99,15 +90,6 @@ jobs:
           cd .. && cd ..
       - name: package
         run: tar -zcvf x-ui-linux-arm64.tar.gz x-ui
-      - name: upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: x-ui-linux-arm64.tar.gz
-          asset_name: x-ui-linux-arm64.tar.gz
-          asset_content_type: application/gzip
 
   linuxs390xbuild:
     name: build x-ui s390x version
@@ -141,12 +123,12 @@ jobs:
           cd .. && cd ..
       - name: package
         run: tar -zcvf x-ui-linux-s390x.tar.gz x-ui
-      - name: upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: x-ui-linux-s390x.tar.gz
-          asset_name: x-ui-linux-s390x.tar.gz
-          asset_content_type: application/gzip
+          files: |
+            x-ui-linux-amd64.tar
+            x-ui-linux-s390x.tar.gz
+            x-ui-linux-arm64.tar.gz
+          tag_name: latest

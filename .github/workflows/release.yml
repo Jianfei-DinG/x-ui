@@ -130,7 +130,7 @@ jobs:
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-s390x
           cd ../..
-          tar -zcvf tar -zcvf x-ui-linux-s390x.tar.gz x-ui
+          tar -zcvf x-ui-linux-s390x.tar.gz x-ui
       - name: Release
         uses: softprops/action-gh-release@v2
         with:

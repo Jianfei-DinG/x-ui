@@ -57,6 +57,12 @@ jobs:
           tar -zcvf x-ui-linux-amd64.tar.gz x-ui
           ls -l
           pwd
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+             x-ui-linux-amd64.tar.gz
+          tag_name: latest
 
   linuxarm64build:
     name: Build x-ui ARM64 version
@@ -87,9 +93,13 @@ jobs:
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-arm64
           cd ../..
-
-      - name: Package
-        run: tar -zcvf x-ui-linux-arm64.tar.gz x-ui
+          tar -zcvf x-ui-linux-arm64.tar.gz x-ui
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+             x-ui-linux-arm64.tar.gz
+          tag_name: latest
 
   linuxs390xbuild:
     name: Build x-ui S390X version
@@ -120,22 +130,11 @@ jobs:
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-s390x
           cd ../..
-
-      - name: Package
-        run: tar -zcvf x-ui-linux-s390x.tar.gz x-ui
-
-  release_artifacts:
-    name: Release Artifacts
-    needs: [linuxamd64build, linuxarm64build, linuxs390xbuild]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload Release Assets
+          tar -zcvf tar -zcvf x-ui-linux-s390x.tar.gz x-ui
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            x-ui-linux-amd64.tar.gz
-            x-ui-linux-arm64.tar.gz
-            x-ui-linux-s390x.tar.gz
-          tag_name: ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
+             x-ui-linux-s390x.tar.gz
+          tag_name: latest
+

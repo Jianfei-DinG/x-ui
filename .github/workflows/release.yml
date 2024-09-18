@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.18
-      - name: build linux amd64 version
+      - name: Build Linux AMD64 Version
         run: |
           CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o xui-release -v main.go
           mkdir x-ui
@@ -44,18 +44,20 @@ jobs:
           mkdir bin
           cd bin
           # 下载最新版本的 Xray
-          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
-              | grep "browser_download_url.*Xray-linux-64.zip" \
-              | cut -d '"' -f 4 \
-              | xargs curl -L -o xray.zip && \
-          unzip xray.zip
-          rm -f xray.zip geoip.dat geosite.dat
-          # 下载最新的 geoip.dat 和 geosite.dat
+          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
+          if [ -z "$LATEST_XRAY_URL" ]; then
+            echo "Error: LATEST_XRAY_URL is empty"
+            exit 1
+          fi
+          curl -L -o xray.zip "$LATEST_XRAY_URL"
+          unzip -o xray.zip && rm xray.zip
+          # 下载 geoip.dat 和 geosite.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
           mv xray xray-linux-amd64
-          cd .. && cd ..
-      - name: package
+          cd ../..
+
+      - name: Package
         run: tar -zcvf x-ui-linux-amd64.tar.gz x-ui
 
   linuxarm64build:
@@ -68,7 +70,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.18
-      - name: build linux arm64 version
+      - name: Build Linux ARM64 Version
         run: |
           sudo apt-get update
           sudo apt install gcc-aarch64-linux-gnu
@@ -82,13 +84,13 @@ jobs:
           mkdir bin
           cd bin
           wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-arm64-v8a.zip
-          unzip Xray-linux-arm64-v8a.zip
-          rm -f Xray-linux-arm64-v8a.zip geoip.dat geosite.dat
+          unzip -o Xray-linux-arm64-v8a.zip && rm -f Xray-linux-arm64-v8a.zip geoip.dat geosite.dat
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-arm64
-          cd .. && cd ..
-      - name: package
+          cd ../..
+
+      - name: Package
         run: tar -zcvf x-ui-linux-arm64.tar.gz x-ui
 
   linuxs390xbuild:
@@ -101,7 +103,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.18
-      - name: build linux s390x version
+      - name: Build Linux S390x Version
         run: |
           sudo apt-get update
           sudo apt install gcc-s390x-linux-gnu -y
@@ -115,20 +117,27 @@ jobs:
           mkdir bin
           cd bin
           wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-s390x.zip
-          unzip Xray-linux-s390x.zip
-          rm -f Xray-linux-s390x.zip geoip.dat geosite.dat
+          unzip -o Xray-linux-s390x.zip && rm -f Xray-linux-s390x.zip geoip.dat geosite.dat
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
           wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-s390x
-          cd .. && cd ..
-      - name: package
+          cd ../..
+
+      - name: Package
         run: tar -zcvf x-ui-linux-s390x.tar.gz x-ui
 
-      - name: Release
+  Release:
+    name: Release Artifacts
+    needs: [linuxamd64build, linuxarm64build, linuxs390xbuild]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
             x-ui-linux-amd64.tar.gz
             x-ui-linux-arm64.tar.gz
             x-ui-linux-s390x.tar.gz
-          tag_name: latest
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token

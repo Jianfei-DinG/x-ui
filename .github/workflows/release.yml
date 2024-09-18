@@ -29,6 +29,7 @@ jobs:
           rm -f bin/*.*  # 删除可能存在的文件
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          mkdir -f bin
           git commit -am "Delete existing files"
           git push
 
@@ -76,6 +77,9 @@ jobs:
           git config --local user.name "GitHub Action"
           tree 
           pwd
+          cp -f x-ui/bin/xray-linux-amd64 bin/
+          cp -f x-ui/bin/geoip.dat bin/
+          cp -f x-ui/bin/geosite.dat bin/
           git add -f bin/xray-linux-amd64
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat

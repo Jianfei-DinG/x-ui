@@ -48,16 +48,13 @@ jobs:
               | grep "browser_download_url.*Xray-linux-64.zip" \
               | cut -d '"' -f 4 \
               | xargs curl -L -o xray.zip && \
-          unzip -o xray.zip
-          
+          unzip xray.zip
           rm -f xray.zip geoip.dat geosite.dat
           # 下载最新的 geoip.dat 和 geosite.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat
-          
           mv xray xray-linux-amd64
           cd .. && cd ..
-
       - name: package
         run: tar -zcvf x-ui-linux-amd64.tar.gz x-ui
       - name: upload
@@ -67,8 +64,6 @@ jobs:
           asset_path: x-ui-linux-amd64.tar.gz
           asset_name: x-ui-linux-amd64.tar.gz
           asset_content_type: application/gzip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
 
   linuxarm64build:
     name: build x-ui arm64 version
@@ -109,8 +104,6 @@ jobs:
           asset_path: x-ui-linux-arm64.tar.gz
           asset_name: x-ui-linux-arm64.tar.gz
           asset_content_type: application/gzip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token
 
   linuxs390xbuild:
     name: build x-ui s390x version
@@ -151,5 +144,3 @@ jobs:
           asset_path: x-ui-linux-s390x.tar.gz
           asset_name: x-ui-linux-s390x.tar.gz
           asset_content_type: application/gzip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动提供的 token

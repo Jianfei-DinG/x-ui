@@ -57,6 +57,19 @@ jobs:
           tar -zcvf x-ui-linux-amd64.tar.gz x-ui
           ls -l
           pwd
+
+      - name: Commit changes
+        run: |
+          export TZ="Asia/Shanghai"
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -f x-ui/bin/xray-linux-amd64
+          git add -f x-ui/bin/geoip.dat
+          git add -f x-ui/bin/geosite.dat
+          git commit -m "$TIMESTAMP"
+          git push
+          
       - name: Release
         uses: softprops/action-gh-release@v2
         with:

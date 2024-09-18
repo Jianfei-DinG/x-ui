@@ -32,10 +32,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.18
-
-      - name: Install jq
-        run: sudo apt-get install jq
-
       - name: build linux amd64 version
         run: |
           CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o xui-release -v main.go
@@ -47,14 +43,16 @@ jobs:
           mv xui-release x-ui
           mkdir bin
           cd bin
-          # 下载最新的 Xray
-          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | jq -r '.assets[] | select(.name | contains("Xray-linux-64.zip")) | .browser_download_url')
+          # 下载最新版本的 Xray
+          LATEST_XRAY_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4)
           echo "LATEST_XRAY_URL: $LATEST_XRAY_URL"  # 打印 URL
           if [ -z "$LATEST_XRAY_URL" ]; then
             echo "Error: LATEST_XRAY_URL is empty"
             exit 1
           fi
-          curl -L -o Xray-linux-64.zip "$LATEST_XRAY_URL"
+          curl -L -o xray.zip "$LATEST_XRAY_URL" && \
+          unzip -o xray.zip && \
+          rm xray.zip
           # 下载最新的 geoip.dat 和 geosite.dat
           LATEST_GEOIP_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geoip.dat")) | .browser_download_url')
           LATEST_GEOSITE_URL=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | jq -r '.assets[] | select(.name | contains("geosite.dat")) | .browser_download_url')

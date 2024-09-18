@@ -44,14 +44,13 @@ jobs:
           mkdir bin
           cd bin
           # 下载最新版本的 Xray
-          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
-              | grep "browser_download_url.*Xray-linux-64.zip" \
-              | cut -d '"' -f 4 \
-              | xargs curl -L -o xray.zip && \
-          unzip -o xray.zip && \
-          rm xray.zip
+          curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest
+              | grep "browser_download_url.*Xray-linux-64.zip"
+              | cut -d '"' -f 4
+              | xargs curl -L -o xray.zip
+          unzip -o xray.zip
           
-          rm -f Xray-linux-64.zip geoip.dat geosite.dat
+          rm -f xray.zip geoip.dat geosite.dat
           # 下载最新的 geoip.dat 和 geosite.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geosite.dat" | cut -d '"' -f 4 | xargs curl -L -o geosite.dat

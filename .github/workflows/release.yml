@@ -48,7 +48,7 @@ jobs:
           #     | cut -d '"' -f 4 \
           #     | xargs curl -L -o xray.zip && \
           curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "browser_download_url.*Xray-linux-64.zip" | cut -d '"' -f 4 | xargs curl -L -o xray.zip
-          unzip xray.zip
+          unzip -o xray.zip
           rm -f xray.zip geoip.dat geosite.dat
           # 下载 geoip.dat 和 geosite.dat
           curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest | grep "browser_download_url.*geoip.dat" | cut -d '"' -f 4 | xargs curl -L -o geoip.dat
@@ -68,7 +68,6 @@ jobs:
           git add -f bin/xray-linux-amd64
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat
-          rm -f xui-release
           git commit -m "$TIMESTAMP"
           git push
           

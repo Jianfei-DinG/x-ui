@@ -80,7 +80,6 @@ jobs:
           git add -f bin/xray-linux-amd64
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat
-          git add xui-release
           git commit -m "$TIMESTAMP"
           git push
           

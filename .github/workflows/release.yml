@@ -66,6 +66,7 @@ jobs:
           git add -f bin/xray-linux-amd64
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat
+          rm -f xui-release
           git commit -m "$TIMESTAMP"
           git push
           

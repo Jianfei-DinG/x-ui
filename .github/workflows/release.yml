@@ -26,7 +26,7 @@ jobs:
 
       - name: Delete existing files
         run: |
-          rm -f bin/*.*  # 删除可能存在的文件
+          rm -f bin/*  # 删除可能存在的文件
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           mkdir -p bin
@@ -123,6 +123,18 @@ jobs:
           mv xray xray-linux-arm64
           cd ../..
           tar -zcvf x-ui-linux-arm64.tar.gz x-ui
+
+      - name: Commit changes
+        run: |
+          export TZ="Asia/Shanghai"
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          cp -f x-ui/bin/xray-linux-arm64 bin/
+          git add -f bin/xray-linux-arm64
+          git commit -m "$TIMESTAMP"
+          git push
+          
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -160,6 +172,18 @@ jobs:
           mv xray xray-linux-s390x
           cd ../..
           tar -zcvf x-ui-linux-s390x.tar.gz x-ui
+
+      - name: Commit changes
+        run: |
+          export TZ="Asia/Shanghai"
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          cp -f x-ui/bin/xray-linux-s390x bin/
+          git add -f bin/xray-linux-s390x
+          git commit -m "$TIMESTAMP"
+          git push
+          
       - name: Release
         uses: softprops/action-gh-release@v2
         with:

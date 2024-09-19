@@ -17,6 +17,16 @@ require (
 	google.golang.org/grpc v1.66.2
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.12
+	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
+	github.com/Workiva/go-datastructures v1.0.53
+	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
+	github.com/tklauser/go-sysconf v0.3.5 // indirect
+	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744 // indirect
+	google.golang.org/grpc v1.38.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
+
 )
 
 require (

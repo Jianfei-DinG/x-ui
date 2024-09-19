@@ -96,7 +96,7 @@ jobs:
 
   linuxarm64build:
     name: Build x-ui ARM64 version
-    needs: release
+    needs: linuxamd64build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -145,7 +145,7 @@ jobs:
 
   linuxs390xbuild:
     name: Build x-ui S390X version
-    needs: release
+    needs: linuxarm64build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

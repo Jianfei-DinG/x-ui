@@ -32,7 +32,7 @@ jobs:
           rm -rf bin/*  # 删除 bin 目录下的所有文件
           git add -A  # 添加所有变更到暂存区
           git commit -m "Delete existing files" || echo "No changes to commit"
-          git push origin main  # 推送更改
+          git push  # 推送更改
 
 
   linuxamd64build:

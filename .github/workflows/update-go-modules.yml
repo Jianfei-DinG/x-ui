@@ -28,12 +28,12 @@ jobs:
     - name: Install dependencies
       run: |
         go mod tidy
-        go mod download
+    #     go mod download
 
-    - name: Update go.mod and regenerate go.sum
-      run: |
-        go get -u ./...  # 更新所有依赖
-        go mod tidy      # 重新整理依赖
+    # - name: Update go.mod and regenerate go.sum
+    #   run: |
+    #     go get -u ./...  # 更新所有依赖
+    #     go mod tidy      # 重新整理依赖
 
     - name: Commit changes
       run: |

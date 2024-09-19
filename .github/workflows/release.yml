@@ -85,7 +85,7 @@ jobs:
           git add -f bin/geoip.dat
           git add -f bin/geosite.dat
           git commit -m "$TIMESTAMP"
-          git push
+          git pull origin main
           
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -134,7 +134,7 @@ jobs:
           cp -f x-ui/bin/xray-linux-arm64 bin/
           git add -f bin/xray-linux-arm64
           git commit -m "$TIMESTAMP"
-          git push
+          git pull origin main
           
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -183,7 +183,7 @@ jobs:
           cp -f x-ui/bin/xray-linux-s390x bin/
           git add -f bin/xray-linux-s390x
           git commit -m "$TIMESTAMP"
-          git push
+          git pull origin main
           
       - name: Release
         uses: softprops/action-gh-release@v2

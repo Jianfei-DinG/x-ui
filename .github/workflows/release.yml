@@ -179,7 +179,7 @@ jobs:
           git add -f bin/xray-linux-s390x
           git add -A  # 添加所有变更到暂存区
           git commit -m "$TIMESTAMP"
-          git push
+          git push origin main
           
       - name: Release
         uses: softprops/action-gh-release@v2

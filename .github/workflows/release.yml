@@ -31,7 +31,7 @@ jobs:
           git config --local user.name "GitHub Action"
           mkdir -p bin
           git commit -am "Delete existing files"
-          git pull origin main
+          git pull
 
   linuxamd64build:
     name: Build x-ui AMD64 version

@@ -16,10 +16,11 @@ var name string
 type LogLevel string
 
 const (
-	Debug LogLevel = "debug"
-	Info  LogLevel = "info"
-	Warn  LogLevel = "warn"
-	Error LogLevel = "error"
+	Debug  LogLevel = "debug"
+	Info   LogLevel = "info"
+	Notice LogLevel = "notice"
+	Warn   LogLevel = "warn"
+	Error  LogLevel = "error"
 )
 
 func GetVersion() string {
@@ -45,6 +46,30 @@ func IsDebug() bool {
 	return os.Getenv("XUI_DEBUG") == "true"
 }
 
+func GetBinFolderPath() string {
+	binFolderPath := os.Getenv("XUI_BIN_FOLDER")
+	if binFolderPath == "" {
+		binFolderPath = "bin"
+	}
+	return binFolderPath
+}
+
+func GetDBFolderPath() string {
+	dbFolderPath := os.Getenv("XUI_DB_FOLDER")
+	if dbFolderPath == "" {
+		dbFolderPath = "/etc/x-ui"
+	}
+	return dbFolderPath
+}
+
 func GetDBPath() string {
-	return fmt.Sprintf("/etc/%s/%s.db", GetName(), GetName())
+	return fmt.Sprintf("%s/%s.db", GetDBFolderPath(), GetName())
+}
+
+func GetLogFolder() string {
+	logFolderPath := os.Getenv("XUI_LOG_FOLDER")
+	if logFolderPath == "" {
+		logFolderPath = "/var/log"
+	}
+	return logFolderPath
 }

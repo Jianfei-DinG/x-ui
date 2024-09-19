@@ -11,10 +11,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
+    - name: Setup Go
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.20'  # 指定你的 Go 版本
+        go-version-file: go.mod  # 指定你的 Go 版本
 
     - name: Clean Go module cache
       run: go clean -modcache  # 清理模块缓存

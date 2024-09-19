@@ -24,7 +24,7 @@ jobs:
           mkdir -p bin
           git add -A  # 添加所有变更到暂存区
           git commit -am "Delete existing files" || echo "No changes to commit"
-          git push origin main  # 推送更改
+          git push
           
   linuxamd64build:
     name: Build x-ui AMD64 version
@@ -126,11 +126,12 @@ jobs:
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git pull origin main  # 先同步远程
           cp -f x-ui/bin/xray-linux-arm64 bin/
           git add -f bin/xray-linux-arm64
           git add -A  # 添加所有变更到暂存区
           git commit -m "$TIMESTAMP"
-          git pull origin main
+          git push
           
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -181,7 +182,7 @@ jobs:
           git add -f bin/xray-linux-s390x
           git add -A  # 添加所有变更到暂存区
           git commit -m "$TIMESTAMP"
-          git pull origin main
+          git push
           
       - name: Release
         uses: softprops/action-gh-release@v2

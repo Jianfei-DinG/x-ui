@@ -12,13 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Git config
+      - name: Delete existing files and commit changes
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-
-      - name: Delete existing files and commit changes
-        run: |
           git pull origin main  # 先同步远程
           rm -rf bin/*  # 删除 bin 目录下的所有文件
           mkdir -p bin

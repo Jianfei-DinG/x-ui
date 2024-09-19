@@ -2,12 +2,6 @@ name: Update Go Modules
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   update-modules:
@@ -37,11 +31,9 @@ jobs:
 
     - name: Force update specific module if checksum mismatch
       run: |
-        if ! go get github.com/XTLS/Xray-core@v1.8.24; then
-          echo "Force updating Xray-core due to checksum mismatch."
-          go get -u github.com/XTLS/Xray-core
-          go mod tidy
-        fi
+        echo "Updating Xray-core due to checksum mismatch."
+        go get -u github.com/XTLS/Xray-core@latest
+        go mod tidy
         
     - name: Commit changes
       run: |

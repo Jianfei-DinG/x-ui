@@ -1,46 +1,84 @@
 package xray
 
 import (
-	"bufio"
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
-	"regexp"
 	"runtime"
-	"strings"
+	"syscall"
 	"time"
+
+	"x-ui/config"
+	"x-ui/logger"
 	"x-ui/util/common"
-
-	"github.com/Workiva/go-datastructures/queue"
-	statsservice "github.com/xtls/xray-core/app/stats/command"
-	"google.golang.org/grpc"
 )
-
-var trafficRegex = regexp.MustCompile("(inbound|outbound)>>>([^>]+)>>>traffic>>>(downlink|uplink)")
 
 func GetBinaryName() string {
 	return fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
 }
 
 func GetBinaryPath() string {
-	return "bin/" + GetBinaryName()
+	return config.GetBinFolderPath() + "/" + GetBinaryName()
 }
 
 func GetConfigPath() string {
-	return "bin/config.json"
+	return config.GetBinFolderPath() + "/config.json"
 }
 
 func GetGeositePath() string {
-	return "bin/geosite.dat"
+	return config.GetBinFolderPath() + "/geosite.dat"
 }
 
 func GetGeoipPath() string {
-	return "bin/geoip.dat"
+	return config.GetBinFolderPath() + "/geoip.dat"
+}
+
+func GetIPLimitLogPath() string {
+	return config.GetLogFolder() + "/3xipl.log"
+}
+
+func GetIPLimitBannedLogPath() string {
+	return config.GetLogFolder() + "/3xipl-banned.log"
+}
+
+func GetIPLimitBannedPrevLogPath() string {
+	return config.GetLogFolder() + "/3xipl-banned.prev.log"
+}
+
+func GetAccessPersistentLogPath() string {
+	return config.GetLogFolder() + "/3xipl-ap.log"
+}
+
+func GetAccessPersistentPrevLogPath() string {
+	return config.GetLogFolder() + "/3xipl-ap.prev.log"
+}
+
+func GetAccessLogPath() (string, error) {
+	config, err := os.ReadFile(GetConfigPath())
+	if err != nil {
+		logger.Warningf("Failed to read configuration file: %s", err)
+		return "", err
+	}
+
+	jsonConfig := map[string]interface{}{}
+	err = json.Unmarshal([]byte(config), &jsonConfig)
+	if err != nil {
+		logger.Warningf("Failed to parse JSON configuration: %s", err)
+		return "", err
+	}
+
+	if jsonConfig["log"] != nil {
+		jsonLog := jsonConfig["log"].(map[string]interface{})
+		if jsonLog["access"] != nil {
+			accessLogPath := jsonLog["access"].(string)
+			return accessLogPath, nil
+		}
+	}
+	return "", err
 }
 
 func stopProcess(p *Process) {
@@ -63,16 +101,20 @@ type process struct {
 	version string
 	apiPort int
 
-	config  *Config
-	lines   *queue.Queue
-	exitErr error
+	onlineClients []string
+
+	config    *Config
+	logWriter *LogWriter
+	exitErr   error
+	startTime time.Time
 }
 
 func newProcess(config *Config) *process {
 	return &process{
-		version: "Unknown",
-		config:  config,
-		lines:   queue.New(100),
+		version:   "Unknown",
+		config:    config,
+		logWriter: NewLogWriter(),
+		startTime: time.Now(),
 	}
 }
 
@@ -91,17 +133,10 @@ func (p *process) GetErr() error {
 }
 
 func (p *process) GetResult() string {
-	if p.lines.Empty() && p.exitErr != nil {
+	if len(p.logWriter.lastLine) == 0 && p.exitErr != nil {
 		return p.exitErr.Error()
 	}
-	items, _ := p.lines.TakeUntil(func(item interface{}) bool {
-		return true
-	})
-	lines := make([]string, 0, len(items))
-	for _, item := range items {
-		lines = append(lines, item.(string))
-	}
-	return strings.Join(lines, "\n")
+	return p.logWriter.lastLine
 }
 
 func (p *process) GetVersion() string {
@@ -114,6 +149,18 @@ func (p *Process) GetAPIPort() int {
 
 func (p *Process) GetConfig() *Config {
 	return p.config
+}
+
+func (p *Process) GetOnlineClients() []string {
+	return p.onlineClients
+}
+
+func (p *Process) SetOnlineClients(users []string) {
+	p.onlineClients = users
+}
+
+func (p *Process) GetUptime() uint64 {
+	return uint64(time.Since(p.startTime).Seconds())
 }
 
 func (p *process) refreshAPIPort() {
@@ -147,71 +194,37 @@ func (p *process) Start() (err error) {
 
 	defer func() {
 		if err != nil {
+			logger.Error("Failure in running xray-core process: ", err)
 			p.exitErr = err
 		}
 	}()
 
 	data, err := json.MarshalIndent(p.config, "", "  ")
 	if err != nil {
-		return common.NewErrorf("生成 xray 配置文件失败: %v", err)
+		return common.NewErrorf("Failed to generate XRAY configuration files: %v", err)
 	}
+
+	err = os.MkdirAll(config.GetLogFolder(), 0o770)
+	if err != nil {
+		logger.Warningf("Failed to create log folder: %s", err)
+	}
+
 	configPath := GetConfigPath()
 	err = os.WriteFile(configPath, data, fs.ModePerm)
 	if err != nil {
-		return common.NewErrorf("写入配置文件失败: %v", err)
+		return common.NewErrorf("Failed to write configuration file: %v", err)
 	}
 
 	cmd := exec.Command(GetBinaryPath(), "-c", configPath)
 	p.cmd = cmd
 
-	stdReader, err := cmd.StdoutPipe()
-	if err != nil {
-		return err
-	}
-	errReader, err := cmd.StderrPipe()
-	if err != nil {
-		return err
-	}
-
-	go func() {
-		defer func() {
-			common.Recover("")
-			stdReader.Close()
-		}()
-		reader := bufio.NewReaderSize(stdReader, 8192)
-		for {
-			line, _, err := reader.ReadLine()
-			if err != nil {
-				return
-			}
-			if p.lines.Len() >= 100 {
-				p.lines.Get(1)
-			}
-			p.lines.Put(string(line))
-		}
-	}()
-
-	go func() {
-		defer func() {
-			common.Recover("")
-			errReader.Close()
-		}()
-		reader := bufio.NewReaderSize(errReader, 8192)
-		for {
-			line, _, err := reader.ReadLine()
-			if err != nil {
-				return
-			}
-			if p.lines.Len() >= 100 {
-				p.lines.Get(1)
-			}
-			p.lines.Put(string(line))
-		}
-	}()
+	cmd.Stdout = p.logWriter
+	cmd.Stderr = p.logWriter
 
 	go func() {
 		err := cmd.Run()
 		if err != nil {
+			logger.Error("Failure in running xray-core:", err)
 			p.exitErr = err
 		}
 	}()
@@ -226,54 +239,5 @@ func (p *process) Stop() error {
 	if !p.IsRunning() {
 		return errors.New("xray is not running")
 	}
-	return p.cmd.Process.Kill()
-}
-
-func (p *process) GetTraffic(reset bool) ([]*Traffic, error) {
-	if p.apiPort == 0 {
-		return nil, common.NewError("xray api port wrong:", p.apiPort)
-	}
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%v", p.apiPort), grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	client := statsservice.NewStatsServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-	request := &statsservice.QueryStatsRequest{
-		Reset_: reset,
-	}
-	resp, err := client.QueryStats(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-	tagTrafficMap := map[string]*Traffic{}
-	traffics := make([]*Traffic, 0)
-	for _, stat := range resp.GetStat() {
-		matchs := trafficRegex.FindStringSubmatch(stat.Name)
-		isInbound := matchs[1] == "inbound"
-		tag := matchs[2]
-		isDown := matchs[3] == "downlink"
-		if tag == "api" {
-			continue
-		}
-		traffic, ok := tagTrafficMap[tag]
-		if !ok {
-			traffic = &Traffic{
-				IsInbound: isInbound,
-				Tag:       tag,
-			}
-			tagTrafficMap[tag] = traffic
-			traffics = append(traffics, traffic)
-		}
-		if isDown {
-			traffic.Down = stat.Value
-		} else {
-			traffic.Up = stat.Value
-		}
-	}
-
-	return traffics, nil
+	return p.cmd.Process.Signal(syscall.SIGTERM)
 }

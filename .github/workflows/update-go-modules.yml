@@ -43,7 +43,8 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         if [ -n "$(git status --porcelain)" ]; then
-            git add go.mod go.sum  # 添加 go.mod 和 go.sum
+            git add go.sum  
+            git add go.mod   # 添加 go.mod 和 go.sum
             git commit -m "$TIMESTAMP"
             git push origin main
         else

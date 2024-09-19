@@ -18,6 +18,12 @@ jobs:
 
     - name: Clean Go module cache
       run: go clean -modcache  # 清理模块缓存
+      
+    - name: Remove go.sum
+      run: |
+        if [ -f go.sum ]; then
+          rm go.sum  # 删除现有的 go.sum 文件
+        fi
 
     - name: Install dependencies
       run: |
@@ -29,12 +35,6 @@ jobs:
         go get -u ./...  # 更新所有依赖
         go mod tidy      # 重新整理依赖
 
-    - name: Force update specific module if checksum mismatch
-      run: |
-        echo "Updating Xray-core due to checksum mismatch."
-        go get -u github.com/XTLS/Xray-core@latest
-        go mod tidy
-        
     - name: Commit changes
       run: |
         export TZ="Asia/Shanghai"

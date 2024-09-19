@@ -41,7 +41,7 @@ jobs:
         TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add go.mod go.sum
+        git add go.sum
         git commit -m "$TIMESTAMP"
         git push origin main
 

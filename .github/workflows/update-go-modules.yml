@@ -27,7 +27,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        go mod tidy
+         go get -u ./...  # 更新所有依赖
+         go mod tidy      # 重新整理依赖
     #     go mod download
 
     # - name: Update go.mod and regenerate go.sum
@@ -41,8 +42,13 @@ jobs:
         TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add go.sum
-        git commit -m "$TIMESTAMP"
-        git push origin main
+        if [ -n "$(git status --porcelain)" ]; then
+            git add go.sum
+            git commit -m "$TIMESTAMP"
+            git push origin main
+        else
+            echo "No changes to commit."
+        fi
+
 
 

@@ -17,7 +17,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/xtls/xray-core v1.8.24
 	go.uber.org/atomic v1.11.0
-	golang.org/x/sys v0.0.0-20230823141500-7f3e8bcb2de0 // indirect
+	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744 // indirect
 	golang.org/x/text v0.18.0
 	google.golang.org/grpc v1.51.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect

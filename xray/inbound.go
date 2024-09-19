@@ -2,17 +2,19 @@ package xray
 
 import (
 	"bytes"
+
 	"x-ui/util/json_util"
 )
 
 type InboundConfig struct {
-	Listen         json_util.RawMessage `json:"listen"` // listen 不能为空字符串
+	Listen         json_util.RawMessage `json:"listen"` // listen cannot be an empty string
 	Port           int                  `json:"port"`
 	Protocol       string               `json:"protocol"`
 	Settings       json_util.RawMessage `json:"settings"`
 	StreamSettings json_util.RawMessage `json:"streamSettings"`
 	Tag            string               `json:"tag"`
 	Sniffing       json_util.RawMessage `json:"sniffing"`
+	Allocate       json_util.RawMessage `json:"allocate"`
 }
 
 func (c *InboundConfig) Equals(other *InboundConfig) bool {
@@ -35,6 +37,9 @@ func (c *InboundConfig) Equals(other *InboundConfig) bool {
 		return false
 	}
 	if !bytes.Equal(c.Sniffing, other.Sniffing) {
+		return false
+	}
+	if !bytes.Equal(c.Allocate, other.Allocate) {
 		return false
 	}
 	return true

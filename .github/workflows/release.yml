@@ -26,12 +26,14 @@ jobs:
 
       - name: Delete existing files
         run: |
-          rm -f bin/*  # 删除可能存在的文件
+          rm -r bin/*  # 删除可能存在的文件
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           mkdir -p bin
-          git commit -am "Delete existing files"
+          git add -A  # 添加所有变更到暂存区
+          git commit -m "Delete existing files" || echo "No changes to commit"
           git pull
+
 
   linuxamd64build:
     name: Build x-ui AMD64 version

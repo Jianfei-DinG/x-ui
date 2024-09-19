@@ -36,7 +36,7 @@ jobs:
     #     go get -u ./...  # 更新所有依赖
     #     go mod tidy      # 重新整理依赖
 
-    - name: Commit changes
+    - name: push changes
       run: |
         export TZ="Asia/Shanghai"
         TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
@@ -47,7 +47,7 @@ jobs:
             git commit -m "$TIMESTAMP"
             git push origin main
         else
-            echo "No changes to commit."
+            echo "No 啊 changes to commit."
         fi
 
 

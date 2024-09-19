@@ -125,6 +125,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git pull origin main  # 先同步远程
+          rm -f xui-release
           cp -f x-ui/bin/xray-linux-arm64 bin/
           git add -f bin/xray-linux-arm64
           git add -A  # 添加所有变更到暂存区
@@ -176,6 +177,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git pull origin main  # 先同步远程
+          rm -f xui-release
           cp -f x-ui/bin/xray-linux-s390x bin/
           git add -f bin/xray-linux-s390x
           git add -A  # 添加所有变更到暂存区

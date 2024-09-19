@@ -68,6 +68,7 @@ jobs:
           git pull origin main  # 先同步远程
           tree 
           pwd
+          mkdir -p bin
           rm -f xui-release
           cp -f x-ui/bin/xray-linux-amd64 bin/
           cp -f x-ui/bin/geoip.dat bin/
